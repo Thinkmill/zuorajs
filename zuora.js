@@ -12,6 +12,7 @@ const exportsLib = require('./lib/exports.js');
 const filesLib = require('./lib/files.js');
 const invoicesLib = require('./lib/invoices.js');
 const invoiceItemsLib = require('./lib/invoiceItems.js');
+const productsLib = require('./lib/products.js');
 const productRatePlansLib = require('./lib/productRatePlans.js');
 const productRatePlanChargesLib = require('./lib/productRatePlanCharges.js');
 const ratePlanChargesLib = require('./lib/ratePlanCharges.js');
@@ -22,6 +23,8 @@ const rsaSignaturesLib = require('./lib/rsaSignatures');
 const paymentsLib = require('./lib/payments');
 const usagesLib = require('./lib/usages.js');
 
+const { catcher } = require('./lib/utils.js');
+
 function Zuora(config) {
   this.serverUrl = config.url;
   this.oauthType = config.oauthType || 'cookie';
@@ -31,6 +34,10 @@ function Zuora(config) {
   this.client_secret = config.client_secret;
   this.entityId = config.entityId;
   this.entityName = config.entityName;
+  this.debugErrors = config.debugErrors || false;
+  this.catcher = this.debugErrors
+    ? catcher
+    : (error) => { throw error };
 
   this.accounts = accountsLib(this);
   this.action = actionLib(this);
@@ -77,7 +84,7 @@ Zuora.prototype.authenticate = function() {
         this.access_token = responseBody.access_token;
         this.renewal_time = Date.now() + responseBody.expires_in * 1000 - 60000;
         return { Authorization: `Bearer ${this.access_token}` };
-      });
+      }).catch(this.catcher);
     } else {
       return BPromise.resolve({ Authorization: `Bearer ${this.access_token}` });
     }
@@ -94,10 +101,12 @@ Zuora.prototype.authenticate = function() {
         },
         json: true
       };
-      return got.post(url, query).then(res => {
-        this.authCookie = res.headers['set-cookie'][0];
-        return { cookie: this.authCookie };
-      });
+      return got.post(url, query)
+        .then(res => {
+          this.authCookie = res.headers['set-cookie'][0];
+          return { cookie: this.authCookie };
+        })
+        .catch(this.catcher);
     } else {
       return BPromise.resolve({ cookie: this.authCookie });
     }
