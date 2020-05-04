@@ -1,55 +1,62 @@
 {
-  "name": "zuorajs",
-  "version": "0.0.1",
-  "description": "Zuora REST API client for nodejs",
-  "engines": {
-    "node": ">=6.4.x"
-  },
-  "main": "zuora.js",
-  "scripts": {
-    "test": "node test/main.js"
-  },
-  "keywords": [
-    "zuora",
-    "rest",
-    "api",
-    "nodejs"
-  ],
-  "author": "David Sciamma <dsciamma@sierrawireless.com>",
-  "license": "MIT",
-  "dependencies": {
-    "bluebird": "^2.9.34",
-    "got": "^7.1.0",
-    "cookie": "^0.3.0",
-    "lodash": "^4.17.4",
-    "form-data": "^2.3.0"
-  },
-  "devDependencies": {
-    "eslint": "^4.8.0",
-    "grunt": "^0.4.5",
-    "grunt-release": "^0.13.0",
-    "prettier": "^1.6.1"
-  },
-  "eslintConfig": {
-    "env": {
-      "node": true,
-      "es6": true
-    },
-    "parserOptions": {
-      "ecmaVersion": 8
-    },
-    "extends": [
-      "eslint:recommended"
-    ],
-    "rules": {
-      "linebreak-style": [
-        "error",
-        "unix"
-      ],
-      "max-params": [
-        "warn",
-        3
-      ]
-    }
-  }
+	"name": "zuorajs",
+	"version": "0.0.1",
+	"description": "Zuora REST API client for nodejs",
+	"engines": {
+		"node": ">=6.4.x"
+	},
+	"main": "zuora.js",
+	"scripts": {
+		"format": "prettier --write \"**/*.{js,md,json}\"",
+		"test": "node test/main.js"
+	},
+	"keywords": [
+		"zuora",
+		"rest",
+		"api",
+		"nodejs"
+	],
+	"author": [
+		"David Sciamma <dsciamma@sierrawireless.com>",
+		"John Molomby <john@thinkmill.com.au>"
+	],
+	"license": "MIT",
+	"dependencies": {
+		"bluebird": "^2.9.34",
+		"got": "^7.1.0",
+		"cookie": "^0.3.0",
+		"lodash": "^4.17.4",
+		"form-data": "^2.3.0"
+	},
+	"devDependencies": {
+		"eslint": "^4.8.0",
+		"grunt": "^0.4.5",
+		"grunt-release": "^0.13.0",
+		"prettier": "^2.0.5"
+	},
+	"prettier": {
+		"proseWrap": "preserve",
+		"singleQuote": true,
+		"trailingComma": "es5",
+		"useTabs": true,
+		"printWidth": 100
+	},
+	"eslintConfig": {
+		"env": {
+			"node": true,
+			"es6": true
+		},
+		"parserOptions": {
+			"ecmaVersion": 8
+		},
+		"extends": [
+			"eslint:recommended"
+		],
+		"rules": {
+			"linebreak-style": [
+				"error",
+				"unix"
+			]
+		}
+	}
 }

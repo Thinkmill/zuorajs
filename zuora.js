@@ -26,126 +26,141 @@ const usagesLib = require('./lib/usages.js');
 const { catcher } = require('./lib/utils.js');
 
 function Zuora(config) {
-  this.serverUrl = config.url;
-  this.oauthType = config.oauthType || 'cookie';
-  this.apiAccessKeyId = config.apiAccessKeyId;
-  this.apiSecretAccessKey = config.apiSecretAccessKey;
-  this.client_id = config.client_id;
-  this.client_secret = config.client_secret;
-  this.entityId = config.entityId;
-  this.entityName = config.entityName;
-  this.debugErrors = config.debugErrors || false;
-  this.catcher = this.debugErrors
-    ? catcher
-    : (error) => { throw error };
+	this.serverUrl = config.url;
+	this.oauthType = config.oauthType || 'cookie';
+	this.apiAccessKeyId = config.apiAccessKeyId;
+	this.apiSecretAccessKey = config.apiSecretAccessKey;
+	this.client_id = config.client_id;
+	this.client_secret = config.client_secret;
+	this.entityId = config.entityId;
+	this.entityName = config.entityName;
+	this.debugErrors = config.debugErrors || false;
+	this.catcher = this.debugErrors
+		? catcher
+		: (error) => {
+				throw error;
+		  };
 
-  this.accounts = accountsLib(this);
-  this.action = actionLib(this);
-  this.amendments = amendmentLib(this);
-  this.attachments = attachmentsLib(this);
-  this.billRun = billRunLib(this);
-  this.contacts = contactsLib(this);
-  this.exports = exportsLib(this);
-  this.files = filesLib(this);
-  this.invoices = invoicesLib(this);
-  this.invoiceItems = invoiceItemsLib(this);
-  this.products = productsLib(this);
-  this.productRatePlans = productRatePlansLib(this);
-  this.productRatePlanCharges = productRatePlanChargesLib(this);
-  this.ratePlanCharges = ratePlanChargesLib(this);
-  this.subscriptions = subscriptionsLib(this);
-  this.taxationItems = taxationItemsLib(this);
-  this.paymentMethods = paymentMethodsLib(this);
-  this.rsaSignatures = rsaSignaturesLib(this);
-  this.payments = paymentsLib(this);
-  this.usages = usagesLib(this);
+	this.accounts = accountsLib(this);
+	this.action = actionLib(this);
+	this.amendments = amendmentLib(this);
+	this.attachments = attachmentsLib(this);
+	this.billRun = billRunLib(this);
+	this.contacts = contactsLib(this);
+	this.exports = exportsLib(this);
+	this.files = filesLib(this);
+	this.invoices = invoicesLib(this);
+	this.invoiceItems = invoiceItemsLib(this);
+	this.products = productsLib(this);
+	this.productRatePlans = productRatePlansLib(this);
+	this.productRatePlanCharges = productRatePlanChargesLib(this);
+	this.ratePlanCharges = ratePlanChargesLib(this);
+	this.subscriptions = subscriptionsLib(this);
+	this.taxationItems = taxationItemsLib(this);
+	this.paymentMethods = paymentMethodsLib(this);
+	this.rsaSignatures = rsaSignaturesLib(this);
+	this.payments = paymentsLib(this);
+	this.usages = usagesLib(this);
 }
 module.exports = Zuora;
 
-Zuora.prototype.authenticate = function() {
-  const oauthV2 = () => {
-    if (this.access_token === undefined || Date.now() > this.renewal_time) {
-      const url = `${this.serverUrl}/oauth/token`;
+Zuora.prototype.authenticate = function () {
+	const oauthV2 = () => {
+		if (this.access_token === undefined || Date.now() > this.renewal_time) {
+			const url = `${this.serverUrl}/oauth/token`;
 
-      const auth_params = {
-        form: true,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: {
-          client_id: this.client_id,
-          client_secret: this.client_secret,
-          grant_type: 'client_credentials'
-        }
-      };
+			const auth_params = {
+				form: true,
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+				body: {
+					client_id: this.client_id,
+					client_secret: this.client_secret,
+					grant_type: 'client_credentials',
+				},
+			};
 
-      return got.post(url, auth_params).then(res => {
-        const responseBody = JSON.parse(res.body);
+			return got
+				.post(url, auth_params)
+				.then((res) => {
+					const responseBody = JSON.parse(res.body);
 
-        this.access_token = responseBody.access_token;
-        this.renewal_time = Date.now() + responseBody.expires_in * 1000 - 60000;
-        return { Authorization: `Bearer ${this.access_token}` };
-      }).catch(this.catcher);
-    } else {
-      return BPromise.resolve({ Authorization: `Bearer ${this.access_token}` });
-    }
-  };
+					this.access_token = responseBody.access_token;
+					this.renewal_time = Date.now() + responseBody.expires_in * 1000 - 60000;
+					return { Authorization: `Bearer ${this.access_token}` };
+				})
+				.catch(this.catcher);
+		} else {
+			return BPromise.resolve({ Authorization: `Bearer ${this.access_token}` });
+		}
+	};
 
-  const cookie = () => {
-    if (this.authCookie === undefined) {
-      const url = this.serverUrl + '/v1/connections';
-      const query = {
-        headers: {
-          'user-agent': 'zuorajs',
-          apiAccessKeyId: this.apiAccessKeyId,
-          apiSecretAccessKey: this.apiSecretAccessKey
-        },
-        json: true
-      };
-      return got.post(url, query)
-        .then(res => {
-          this.authCookie = res.headers['set-cookie'][0];
-          return { cookie: this.authCookie };
-        })
-        .catch(this.catcher);
-    } else {
-      return BPromise.resolve({ cookie: this.authCookie });
-    }
-  };
+	const cookie = () => {
+		if (this.authCookie === undefined) {
+			const url = this.serverUrl + '/v1/connections';
+			const query = {
+				headers: {
+					'user-agent': 'zuorajs',
+					apiAccessKeyId: this.apiAccessKeyId,
+					apiSecretAccessKey: this.apiSecretAccessKey,
+				},
+				json: true,
+			};
+			return got
+				.post(url, query)
+				.then((res) => {
+					this.authCookie = res.headers['set-cookie'][0];
+					return { cookie: this.authCookie };
+				})
+				.catch(this.catcher);
+		} else {
+			return BPromise.resolve({ cookie: this.authCookie });
+		}
+	};
 
-  if (this.oauthType === 'oauth_v2') {
-    return oauthV2();
-  } else {
-    return cookie();
-  }
+	if (this.oauthType === 'oauth_v2') {
+		return oauthV2();
+	} else {
+		return cookie();
+	}
 };
 
-Zuora.prototype.getObject = function(url) {
-  return this.authenticate().then(headers => {
-    const fullUrl = this.serverUrl + url;
-    const query = {
-      headers,
-      json: true
-    };
-    return got.get(fullUrl, query).then(res => res.body).catch(this.catcher);
-  });
+Zuora.prototype.getObject = function (url) {
+	return this.authenticate().then((headers) => {
+		const fullUrl = this.serverUrl + url;
+		const query = {
+			headers,
+			json: true,
+		};
+		return got
+			.get(fullUrl, query)
+			.then((res) => res.body)
+			.catch(this.catcher);
+	});
 };
 
-Zuora.prototype.queryFirst = function(queryString) {
-  return this.action.query(queryString).then(queryResult => (queryResult.size > 0 ? queryResult.records[0] : null));
+Zuora.prototype.queryFirst = function (queryString) {
+	return this.action
+		.query(queryString)
+		.then((queryResult) => (queryResult.size > 0 ? queryResult.records[0] : null));
 };
 
-Zuora.prototype.queryFull = function(queryString) {
-  const fullQueryMore = queryLocator =>
-    this.action
-      .queryMore(queryLocator)
-      .then(result =>
-        result.done ? result.records : fullQueryMore(result.queryLocator).then(more => _.concat(result.records, more))
-      );
+Zuora.prototype.queryFull = function (queryString) {
+	const fullQueryMore = (queryLocator) =>
+		this.action
+			.queryMore(queryLocator)
+			.then((result) =>
+				result.done
+					? result.records
+					: fullQueryMore(result.queryLocator).then((more) => _.concat(result.records, more))
+			);
 
-  return this.action
-    .query(queryString)
-    .then(result =>
-      result.done ? result.records : fullQueryMore(result.queryLocator).then(more => _.concat(result.records, more))
-    );
+	return this.action
+		.query(queryString)
+		.then((result) =>
+			result.done
+				? result.records
+				: fullQueryMore(result.queryLocator).then((more) => _.concat(result.records, more))
+		);
 };
