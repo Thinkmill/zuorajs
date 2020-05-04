@@ -49,6 +49,7 @@ function Zuora(config) {
   this.files = filesLib(this);
   this.invoices = invoicesLib(this);
   this.invoiceItems = invoiceItemsLib(this);
+  this.products = productsLib(this);
   this.productRatePlans = productRatePlansLib(this);
   this.productRatePlanCharges = productRatePlanChargesLib(this);
   this.ratePlanCharges = ratePlanChargesLib(this);
