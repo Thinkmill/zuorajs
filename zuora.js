@@ -91,7 +91,7 @@ Zuora.prototype.authenticate = function() {
     }
   };
 
-  const oauthCookie = () => {
+  const cookie = () => {
     if (this.authCookie === undefined) {
       const url = this.serverUrl + '/v1/connections';
       const query = {
@@ -116,7 +116,7 @@ Zuora.prototype.authenticate = function() {
   if (this.oauthType === 'oauth_v2') {
     return oauthV2();
   } else {
-    return oauthCookie();
+    return cookie();
   }
 };
 
