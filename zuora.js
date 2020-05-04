@@ -127,7 +127,7 @@ Zuora.prototype.getObject = function(url) {
       headers,
       json: true
     };
-    return got.get(fullUrl, query).then(res => res.body);
+    return got.get(fullUrl, query).then(res => res.body).catch(this.catcher);
   });
 };
 
