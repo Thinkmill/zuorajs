@@ -164,3 +164,17 @@ Zuora.prototype.queryFull = function (queryString) {
 				: fullQueryMore(result.queryLocator).then((more) => _.concat(result.records, more))
 		);
 };
+
+Zuora.prototype.describe = function (type) {
+	const url = this.serverUrl + '/v1/describe/' + type;
+	return this.authenticate().then((headers) => {
+		const query = {
+			headers,
+			// json: true,
+		};
+		return got
+			.get(url, query)
+			.then((res) => res.body)
+			.catch(this.catcher);
+	});
+};
