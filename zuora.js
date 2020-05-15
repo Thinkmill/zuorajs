@@ -27,11 +27,11 @@ const { catcher } = require('./lib/utils.js');
 
 function Zuora(config) {
 	this.serverUrl = config.url;
-	this.oauthType = config.oauthType || 'cookie';
+	this.authMethod = config.authMethod || 'cookie';
 	this.apiAccessKeyId = config.apiAccessKeyId;
 	this.apiSecretAccessKey = config.apiSecretAccessKey;
-	this.client_id = config.client_id;
-	this.client_secret = config.client_secret;
+	this.clientId = config.clientId;
+	this.clientSecret = config.clientSecret;
 	this.entityId = config.entityId;
 	this.entityName = config.entityName;
 	this.debugErrors = config.debugErrors || false;
@@ -75,8 +75,8 @@ Zuora.prototype.authenticate = function () {
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
 				body: {
-					client_id: this.client_id,
-					client_secret: this.client_secret,
+					client_id: this.clientId,
+					client_secret: this.clientSecret,
 					grant_type: 'client_credentials',
 				},
 			};
@@ -119,7 +119,7 @@ Zuora.prototype.authenticate = function () {
 		}
 	};
 
-	if (this.oauthType === 'oauth_v2') {
+	if (this.authMethod === 'oauth_v2') {
 		return oauthV2();
 	} else {
 		return cookie();
